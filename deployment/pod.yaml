@@ -33,8 +33,14 @@ spec:
         requests:
           cpu: 100m
           memory: 200Mi
+      securityContext:
+        privileged: false
     - name: sirius-a
       image: hyc3z/sirius-a:cuda-10.1-resnet-1.0
       imagePullPolicy: Always
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
   terminationGracePeriodSeconds: 30
   restartPolicy: Never

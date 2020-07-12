@@ -88,12 +88,20 @@ func CreatePod() {
 						},
 					},
 					ImagePullPolicy: corev1.PullPolicy("Always"),
+					SecurityContext: &corev1.SecurityContext{
+						Privileged: ptrbool(false),
+					},
 				},
 				corev1.Container{
 					Name:            "sirius-a",
 					Image:           "hyc3z/sirius-a:cuda-10.1-resnet-1.0",
 					Resources:       corev1.ResourceRequirements{},
 					ImagePullPolicy: corev1.PullPolicy("Always"),
+					SecurityContext: &corev1.SecurityContext{
+						RunAsUser:                ptrint64(1000),
+						RunAsNonRoot:             ptrbool(true),
+						AllowPrivilegeEscalation: ptrbool(false),
+					},
 				},
 			},
 			RestartPolicy:                 corev1.RestartPolicy("Never"),
