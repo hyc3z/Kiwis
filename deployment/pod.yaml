@@ -38,15 +38,16 @@ spec:
     - name: sirius-a
       image: hyc3z/sirius-a:cuda-10.1-resnet-1.0
       imagePullPolicy: Always
-      command: ["mv", "/usr/lib/x86_64-linux-gnu/libcuda.so.1", "/usr/lib/x86_64-linux-gnu/libcuda.so.1.orig"]
       env:
         - name: MEM_MAX_LIMIT
           value: "2147483648"
       volumeMounts:
         - name: vcuda
           mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1
-          subPath: libcuda.so.1
           readOnly: true
+        - name: vcuda-orig
+            mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1.orig
+            readOnly: true
       securityContext:
         runAsUser: 1000
         runAsNonRoot: true
@@ -55,5 +56,8 @@ spec:
     - name: vcuda
       hostPath:
         path: /home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1
+    - name: vcuda-orig
+      hostPath:
+        path: /home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1.orig
   terminationGracePeriodSeconds: 30
   restartPolicy: Never
