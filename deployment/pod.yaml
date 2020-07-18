@@ -51,9 +51,9 @@ spec:
         runAsUser: 1000
         runAsNonRoot: true
         allowPrivilegeEscalation: false
-      volumes:
-        - name: vcuda
-          hostPath:
-            path: /home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1
+  volumes:
+    - name: vcuda
+      hostPath:
+        path: /home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1
   terminationGracePeriodSeconds: 30
   restartPolicy: Never
