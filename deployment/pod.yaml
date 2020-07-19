@@ -46,8 +46,8 @@ spec:
           mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1
           readOnly: true
         - name: vcuda-orig
-            mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1.orig
-            readOnly: true
+          mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1.orig
+          readOnly: true
       securityContext:
         runAsUser: 1000
         runAsNonRoot: true
