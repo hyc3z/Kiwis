@@ -48,8 +48,17 @@ spec:
         - name: vcuda-orig
           mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1.orig
           readOnly: true
-        - name: vcuda-source
+        - name: vcuda-lib
           mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.430.64
+          readOnly: true
+        - name: vnvml
+          mountPath: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+          readOnly: true
+        - name: vnvml-orig
+          mountPath: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1.orig
+          readOnly: true
+        - name: vnvml-lib
+          mountPath: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.430.64
           readOnly: true
       securityContext:
         runAsUser: 1000
@@ -62,8 +71,17 @@ spec:
     - name: vcuda-orig
       hostPath:
         path: /home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1.orig
-    - name: vcuda-source
+    - name: vcuda-lib
       hostPath:
         path: /home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.430.64
+    - name: vnvml
+      hostPath:
+        path: /home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.1
+    - name: vnvml-orig
+      hostPath:
+        path: /home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.1.orig
+    - name: vnvml-lib
+      hostPath:
+        path: /home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.430.64
   terminationGracePeriodSeconds: 30
   restartPolicy: Never

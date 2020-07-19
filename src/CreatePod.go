@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-func CreatePod() {
+func main() {
 	// Create client
 	var kubeconfig string
 	kubeconfig, ok := os.LookupEnv("KUBECONFIG")
@@ -44,6 +44,56 @@ func CreatePod() {
 			},
 		},
 		Spec: corev1.PodSpec{
+			Volumes: []corev1.Volume{
+				corev1.Volume{
+					Name: "vcuda",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1",
+						},
+					},
+				},
+				corev1.Volume{
+					Name: "vcuda-orig",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.1.orig",
+						},
+					},
+				},
+				corev1.Volume{
+					Name: "vcuda-lib",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/cuda-w-mem-watcher/binaries/10.1/libcuda.so.430.64",
+						},
+					},
+				},
+				corev1.Volume{
+					Name: "vnvml",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.1",
+						},
+					},
+				},
+				corev1.Volume{
+					Name: "vnvml-orig",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.1.orig",
+						},
+					},
+				},
+				corev1.Volume{
+					Name: "vnvml-lib",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.430.64",
+						},
+					},
+				},
+			},
 			Containers: []corev1.Container{
 				corev1.Container{
 					Name:  "sirius-b",
@@ -88,19 +138,54 @@ func CreatePod() {
 						},
 					},
 					ImagePullPolicy: corev1.PullPolicy("Always"),
-					SecurityContext: &corev1.SecurityContext{
-						Privileged: ptrbool(false),
-					},
+					SecurityContext: &corev1.SecurityContext{},
 				},
 				corev1.Container{
-					Name:            "sirius-a",
-					Image:           "hyc3z/sirius-a:cuda-10.1-resnet-1.0",
-					Resources:       corev1.ResourceRequirements{},
+					Name:  "sirius-a",
+					Image: "hyc3z/sirius-a:cuda-10.1-resnet-1.0",
+					Env: []corev1.EnvVar{
+						corev1.EnvVar{
+							Name:  "MEM_MAX_LIMIT",
+							Value: "2147483648",
+						},
+					},
+					Resources: corev1.ResourceRequirements{},
+					VolumeMounts: []corev1.VolumeMount{
+						corev1.VolumeMount{
+							Name:      "vcuda",
+							ReadOnly:  true,
+							MountPath: "/usr/lib/x86_64-linux-gnu/libcuda.so.1",
+						},
+						corev1.VolumeMount{
+							Name:      "vcuda-orig",
+							ReadOnly:  true,
+							MountPath: "/usr/lib/x86_64-linux-gnu/libcuda.so.1.orig",
+						},
+						corev1.VolumeMount{
+							Name:      "vcuda-lib",
+							ReadOnly:  true,
+							MountPath: "/usr/lib/x86_64-linux-gnu/libcuda.so.430.64",
+						},
+						corev1.VolumeMount{
+							Name:      "vnvml",
+							ReadOnly:  true,
+							MountPath: "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1",
+						},
+						corev1.VolumeMount{
+							Name:      "vnvml-orig",
+							ReadOnly:  true,
+							MountPath: "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1.orig",
+						},
+						corev1.VolumeMount{
+							Name:      "vnvml-lib",
+							ReadOnly:  true,
+							MountPath: "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.430.64",
+						},
+					},
 					ImagePullPolicy: corev1.PullPolicy("Always"),
 					SecurityContext: &corev1.SecurityContext{
-						RunAsUser:                ptrint64(1000),
-						RunAsNonRoot:             ptrbool(true),
-						AllowPrivilegeEscalation: ptrbool(false),
+						RunAsUser:    ptrint64(1000),
+						RunAsNonRoot: ptrbool(true),
 					},
 				},
 			},
