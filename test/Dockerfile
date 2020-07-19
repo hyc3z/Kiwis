@@ -4,4 +4,4 @@ WORKDIR /
 
 COPY tf_cnn_benchmarks /tf_cnn_benchmarks
 
-CMD ["python3", "/tf_cnn_benchmarks/tf_cnn_benchmarks.py","--model=resnet50"]
+#CMD ["python3", "/tf_cnn_benchmarks/tf_cnn_benchmarks.py","--model=resnet50"]
