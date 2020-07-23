@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-func main() {
+func CreatePod() {
 	// Create client
 	var kubeconfig string
 	kubeconfig, ok := os.LookupEnv("KUBECONFIG")
@@ -104,6 +104,22 @@ func main() {
 							ValueFrom: &corev1.EnvVarSource{
 								FieldRef: &corev1.ObjectFieldSelector{
 									FieldPath: "spec.nodeName",
+								},
+							},
+						},
+						corev1.EnvVar{
+							Name: "POD_NAME",
+							ValueFrom: &corev1.EnvVarSource{
+								FieldRef: &corev1.ObjectFieldSelector{
+									FieldPath: "metadata.name",
+								},
+							},
+						},
+						corev1.EnvVar{
+							Name: "POD_NAMESPACE",
+							ValueFrom: &corev1.EnvVarSource{
+								FieldRef: &corev1.ObjectFieldSelector{
+									FieldPath: "metadata.namespace",
 								},
 							},
 						},
