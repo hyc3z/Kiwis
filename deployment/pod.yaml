@@ -6,11 +6,12 @@ metadata:
   labels:
     app: sirius
 spec:
+  ttlSecondsAfterFinished: 30
   shareProcessNamespace: true
   serviceAccountName: sirius-sa
   containers:
     - name: sirius-b
-      image: hyc3z/sirius-b:cuda-10.1-1.0
+      image: hyc3z/sirius-b:cuda-10.1-1.5
       imagePullPolicy: Always
       env:
         - name: NODE_NAME
