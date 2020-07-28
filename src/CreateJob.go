@@ -41,7 +41,8 @@ func main() {
 			Name: "sirius-job",
 		},
 		Spec: batchv1.JobSpec{
-			BackoffLimit: ptrint32(0),
+			BackoffLimit:            ptrint32(0),
+			TTLSecondsAfterFinished: ptrint32(0),
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "sirius",
