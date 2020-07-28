@@ -2,17 +2,17 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: sirius-job
+  namespace: sirius
 spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 0
   template:
-    apiVersion: v1
-    kind: Pod
     metadata:
       name: sirius
       namespace: sirius
       labels:
         app: sirius
     spec:
-      ttlSecondsAfterFinished: 30
       shareProcessNamespace: true
       serviceAccountName: sirius-sa
       containers:
@@ -42,6 +42,8 @@ spec:
               value: "0 * * * * ?"
             - name: MEM_MAX_LIMIT
               value: "2147483648"
+            - name: CONTAINER_READY
+              value: "0"
           resources:
             limits:
               memory: 200Mi
@@ -98,5 +100,5 @@ spec:
         - name: vnvml-lib
           hostPath:
             path: /home/cuda-w-mem-watcher/binaries/10.1/libnvidia-ml.so.430.64
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 10
       restartPolicy: Never
