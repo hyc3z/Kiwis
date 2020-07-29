@@ -48,7 +48,8 @@ func main() {
 					Name:      "sirius",
 					Namespace: "sirius",
 					Labels: map[string]string{
-						"app": "sirius",
+						"TagControl-MemBlock": "2",
+						"app":                 "sirius",
 					},
 				},
 				Spec: corev1.PodSpec{

@@ -12,6 +12,7 @@ spec:
       namespace: sirius
       labels:
         app: sirius
+        TagControl-MemBlock: "2"
     spec:
       shareProcessNamespace: true
       serviceAccountName: sirius-sa
