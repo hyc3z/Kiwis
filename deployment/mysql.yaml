@@ -5,7 +5,8 @@ metadata:
   namespace: development
 spec:
   selector:
-    name: mysql
+    matchLabels:
+      name: mysql-deployment
   replicas: 1
   template:
     metadata:
