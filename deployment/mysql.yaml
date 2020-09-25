@@ -16,8 +16,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3306
-          environment:
-            MYSQL_ROOT_PASSWORD:123456
+          env:
+            - name:  MYSQL_ROOT_PASSWORD
+              value: "123456"
           volumeMounts:
             - name: mysql_data
               mountPath: /var/lib/mysql
