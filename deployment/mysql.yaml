@@ -4,6 +4,8 @@ metadata:
   name: mysql
   namespace: development
 spec:
+  selector:
+    name: mysql
   replicas: 1
   template:
     metadata:
@@ -26,6 +28,7 @@ spec:
         - name: mysql_data
           hostPath:
             path: /data/mysql_data
+
 ---
 apiVersion: v1
 kind: Service
