@@ -1,18 +1,21 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: ReplicationController
 metadata:
-  name: mysql
-  namespace: sirius
+  name: mysql-rc
+  namespace: default
+  labels:
+    name: mysql-rc
 spec:
   selector:
-    matchLabels:
-      name: mysql-deployment
+    name: mysql-pod
   replicas: 1
   template:
     metadata:
       labels:
-        name: mysql-deployment
+        name: mysql-pod
     spec:
+      nodeSelector:
+        role: master
       containers:
         - name: mysql
           image: mysql:5.7
@@ -23,10 +26,10 @@ spec:
             - name:  MYSQL_ROOT_PASSWORD
               value: "123456"
           volumeMounts:
-            - name: mysql_data
+            - name: mysql-data
               mountPath: /var/lib/mysql
       volumes:
-        - name: mysql_data
+        - name: mysql-data
           hostPath:
             path: /data/mysql_data
 
@@ -34,13 +37,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql
-  namespace: sirius
+  name: mysql-service
+  namespace: default
 spec:
+  selector:
+   name: mysql-pod
   type: NodePort
   ports:
     - port: 3306
-      nodePort: 10306
+      nodePort: 30306
       targetPort: 3306
-  selector:
-    name: mysql
