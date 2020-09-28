@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: k8s-frontend
-          image: hyc3z/k8s-front:r1
+          image: hyc3z/k8s-front:r1.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -28,8 +28,9 @@ metadata:
   namespace: default
 spec:
   selector:
-    name: k8s-frontend-service
+    name: k8s-frontend-pod
   type: NodePort
+  clusterIP: 10.105.105.10
   ports:
     - port: 8080
       nodePort: 30080

@@ -33,6 +33,7 @@ spec:
   selector:
    name: mysql-pod
   type: ClusterIP
+  clusterIP: 10.105.105.1
   ports:
     - port: 3306
       targetPort: 3306
