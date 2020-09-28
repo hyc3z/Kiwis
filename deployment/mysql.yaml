@@ -32,7 +32,7 @@ metadata:
 spec:
   selector:
    name: mysql-pod
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 3306
       targetPort: 3306
