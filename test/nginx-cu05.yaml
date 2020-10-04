@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-testbox-cu05
+  namespace: default
+spec:
+  nodeName: cu05
+  containers:
+  - name: nginx-testbox
+    image: nginx:latest
+    command: ["sleep"]
+    args: ["100000"]

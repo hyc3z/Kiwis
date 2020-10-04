@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tcdaemon
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tcdaemon-cr
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - delete
+      - get
+      - list
+      - watch
+      - update
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tcdaemon-sa
+  namespace: tcdaemon
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tcdaemon-crb
+  namespace: tcdaemon
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tcdaemon-cr
+subjects:
+  - kind: ServiceAccount
+    name: tcdaemon-sa
+    namespace: tcdaemon
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tcdaemon
+  namespace: tcdaemon
+  labels:
+    app: tcdaemon
+spec:
+  selector:
+    matchLabels:
+      app: tcdaemon
+  template:
+    metadata:
+      labels:
+        app: tcdaemon
+    spec:
+      serviceAccountName: tcdaemon-sa
+      containers:
+        - name: tcdaemon
+          image: hyc3z/tcdaemon:cuda-10.1-1.1
+          imagePullPolicy: Always
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: SCHEDULING_POLICY
+              value: "default"
+            - name: MONITOR_GPU_INTERVAL_PATTERN
+              value: "* * * * * ?"
+            - name: MONITOR_POLICY_INTERVAL_PATTERN
+              value: "0 * * * * ?"
+      terminationGracePeriodSeconds: 30

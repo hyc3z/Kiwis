@@ -14,6 +14,7 @@ spec:
       labels:
         name: k8s-frontend-pod
     spec:
+      nodeName: cu05
       containers:
         - name: k8s-frontend
           image: hyc3z/k8s-front:r1.1
@@ -33,5 +34,5 @@ spec:
   clusterIP: 10.105.105.10
   ports:
     - port: 8080
-      nodePort: 30080
+      nodePort: 80
       targetPort: 8080

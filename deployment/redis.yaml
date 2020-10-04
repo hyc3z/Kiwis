@@ -1,36 +1,36 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: k8s-backend-rc
+  name: redis-rc
   namespace: default
   labels:
-    name: k8s-backend-rc
+    name: redis-rc
 spec:
   selector:
-    name: k8s-backend-pod
+    name: redis-pod
   replicas: 1
   template:
     metadata:
       labels:
-        name: k8s-backend-pod
+        name: redis-pod
     spec:
       containers:
-        - name: k8s-backend
-          image: hyc3z/k8s-back:r1.4
+        - name: redis
+          image: redis:4.0
           imagePullPolicy: Always
           ports:
-            - containerPort: 8090
+            - containerPort: 6379
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: k8s-backend-service
+  name: redis-service
   namespace: default
 spec:
   selector:
-    name: k8s-backend-pod
+    name: redis-pod
   type: ClusterIP
-  clusterIP: 10.105.105.5
+  clusterIP: 10.105.105.2
   ports:
-    - port: 8090
-      targetPort: 8090
+    - port: 6379
+      targetPort: 6379
