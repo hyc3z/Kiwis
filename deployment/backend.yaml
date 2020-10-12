@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: k8s-backend
-          image: hyc3z/k8s-back:r1.4
+          image: hyc3z/k8s-back:r1.5
           imagePullPolicy: Always
           ports:
             - containerPort: 8090
