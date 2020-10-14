@@ -12,7 +12,7 @@ spec:
       namespace: sirius
       labels:
         app: sirius
-        TagControl-MemBlock: "2"
+        TagControl-MemBlock: "0"
     spec:
       shareProcessNamespace: true
       serviceAccountName: sirius-sa
@@ -42,7 +42,7 @@ spec:
             - name: MONITOR_POLICY_INTERVAL_PATTERN
               value: "0 * * * * ?"
             - name: MEM_MAX_LIMIT
-              value: "2147483648"
+              value: "0"
             - name: CONTAINER_READY
               value: "0"
           resources:
@@ -58,7 +58,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: MEM_MAX_LIMIT
-              value: "2147483648"
+              value: "0"
           volumeMounts:
             - name: vcuda
               mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1
