@@ -14,7 +14,6 @@ spec:
       labels:
         name: k8s-frontend-pod
     spec:
-      nodeName: cu05
       containers:
         - name: k8s-frontend
           image: hyc3z/k8s-front:1.6
