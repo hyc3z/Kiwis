@@ -1,6 +1,0 @@
-k8s-deployment
-
-部署k8s应用的yaml
-TODO:
-jsonnet 部署
-helm 部署
