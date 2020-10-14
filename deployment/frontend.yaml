@@ -17,7 +17,7 @@ spec:
       nodeName: cu05
       containers:
         - name: k8s-frontend
-          image: hyc3z/k8s-front:r1.2
+          image: hyc3z/k8s-front:r1.3
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
