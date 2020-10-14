@@ -4,23 +4,23 @@ metadata:
   name: "dcgm-exporter"
   labels:
     app.kubernetes.io/name: "dcgm-exporter"
-    app.kubernetes.io/version: "2.1.0-rc.2"
+    app.kubernetes.io/version: "2.0.0-rc.12"
 spec:
   updateStrategy:
     type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: "dcgm-exporter"
-      app.kubernetes.io/version: "2.1.0-rc.2"
+      app.kubernetes.io/version: "2.0.0-rc.12"
   template:
     metadata:
       labels:
         app.kubernetes.io/name: "dcgm-exporter"
-        app.kubernetes.io/version: "2.1.0-rc.2"
+        app.kubernetes.io/version: "2.0.0-rc.12"
       name: "dcgm-exporter"
     spec:
       containers:
-        - image: "nvidia/dcgm-exporter:2.0.10-2.1.0-rc.2-ubuntu18.04"
+        - image: "nvidia/dcgm-exporter:1.7.2"
           env:
             - name: "DCGM_EXPORTER_LISTEN"
               value: ":9400"
@@ -41,7 +41,6 @@ spec:
         - name: "pod-gpu-resources"
           hostPath:
             path: "/var/lib/kubelet/pod-resources"
-
 ---
 
 kind: Service
@@ -50,14 +49,13 @@ metadata:
   name: "dcgm-exporter"
   labels:
     app.kubernetes.io/name: "dcgm-exporter"
-    app.kubernetes.io/version: "2.1.0-rc.2"
+    app.kubernetes.io/version: "2.0.0-rc.12"
 spec:
   selector:
     app.kubernetes.io/name: "dcgm-exporter"
-    app.kubernetes.io/version: "2.1.0-rc.2"
+    app.kubernetes.io/version: "2.0.0-rc.12"
   type: NodePort
-    clusterIP: 10.105.105.2
-    ports:
-      - name: "metrics"
-        port: 9400
-        targetPort: 9400
+  ports:
+    - name: "metrics"
+      port: 9400
+      targetPort: 9400
