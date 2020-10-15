@@ -2,11 +2,13 @@
 
 部署k8s应用
 
-TODO:
+wishlist:
 
 使用 jsonnet 部署
 
 使用 helm 部署
+
+TODO:
 
 ### Feature status
 
