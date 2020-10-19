@@ -45,7 +45,7 @@ spec:
             name: scheduler-config
       containers:
         - name: shu-k8s-scheduler
-          image: hyc3z/shu-k8s-scheduler:1.1
+          image: hyc3z/shu-k8s-scheduler:1.2
           imagePullPolicy: Always
           args:
             - shu-k8s-scheduler
