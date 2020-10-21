@@ -73,4 +73,8 @@ spec:
               value: "* * * * * ?"
             - name: MONITOR_POLICY_INTERVAL_PATTERN
               value: "0 * * * * ?"
+          securityContext:
+            capabilities:
+              add:
+                - SYS_ADMIN
       terminationGracePeriodSeconds: 30
