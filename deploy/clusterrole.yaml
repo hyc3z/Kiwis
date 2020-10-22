@@ -7,18 +7,20 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
     rbac.example.com/aggregate-to-monitoring: "true"
 rules:
-  - apiGroups:
-      - ""
+  - apiGroups: [""]
     resources:
       - nodes
       - pods
       - jobs
+      - configmaps
     verbs:
       - delete
       - get
       - list
       - watch
       - update
+      - create
+      - patch
   - apiGroups: [ "batch", "extensions" ]
     #
     # at the HTTP level, the name of the resource for accessing Job

@@ -1,4 +1,8 @@
 #!/bin/bash
 
 # Execute on master
-kubectl apply -f  ../deploy/*.yaml
+file_names=$(ls ../deploy/*.yaml)
+for file in $file_names
+do
+  kubectl apply -f $file
+done

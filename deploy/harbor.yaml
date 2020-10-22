@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: k8s-harbor
-          image: hyc3z/k8s-harbor:1.0.0
+          image: hyc3z/k8s-harbor:1.0.2
           imagePullPolicy: Always
           ports:
             - containerPort: 8092
