@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: k8s-frontend
-          image: hyc3z/k8s-front:1.9
+          image: hyc3z/k8s-front:v1.0.12
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
