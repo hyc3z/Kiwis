@@ -20,13 +20,13 @@ spec:
         proxy:
           rewritePath: /
           upstream: backend
-    - path: /front
-      action:
-        proxy:
-          rewritePath: /
-          upstream: frontend
     - path: /harbor
       action:
         proxy:
           rewritePath: /
           upstream: harbor
+    - path: /
+      action:
+        proxy:
+          rewritePath: /
+          upstream: frontend
