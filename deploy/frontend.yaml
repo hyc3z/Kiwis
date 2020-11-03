@@ -33,5 +33,4 @@ spec:
   clusterIP: 10.105.105.10
   ports:
     - port: 8080
-      nodePort: 80
       targetPort: 8080

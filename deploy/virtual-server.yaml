@@ -1,0 +1,32 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: nginx-ingress
+spec:
+  host: 192.168.60.16
+  upstreams:
+    - name: backend
+      service: k8s-backend-service
+      port: 8090
+    - name: frontend
+      service: k8s-frontend-service
+      port: 8080
+    - name: harbor
+      service: k8s-harbor-service
+      port: 8092
+  routes:
+    - path: /api
+      action:
+        proxy:
+          rewritePath: /
+          upstream: backend
+    - path: /front
+      action:
+        proxy:
+          rewritePath: /
+          upstream: frontend
+    - path: /harbor
+      action:
+        proxy:
+          rewritePath: /
+          upstream: harbor
