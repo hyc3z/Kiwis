@@ -33,6 +33,8 @@ display_menu() {
     echo "a. Install helm (a)"
     echo "b. Setup nvidia environment (b)"
     echo "c. Change port range (c)"
+    echo "d. Setup nginx environment (d)"
+
 #    echo "Detected md arrays, auto mount? (Y or N)"
 #    read auto_mount
 #    echo "Detected md arrays, auto add to /etc/fstab? (Y or N)"
@@ -412,6 +414,7 @@ until [ $loop -eq 0 ]; do
     a) install_helm ;;
     b) setup_nvidia_environment ;;
     c) change_service_port_range ;;
+    d) setup_nginx_ingress ;;
     *)   (( loop=0 )) ;;
   esac
 done
