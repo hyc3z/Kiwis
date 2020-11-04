@@ -1,0 +1,26 @@
+apiVersion: kibana.k8s.elastic.co/v1beta1
+kind: Kibana
+metadata:
+  name: eck-kibana
+spec:
+  version: 7.9.3
+  count: 1
+  elasticsearchRef:
+    name: eck-elasticsearch
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-http-service
+  namespace: default
+spec:
+  selector:
+    common.k8s.elastic.co/type: kibana
+    kibana.k8s.elastic.co/name: eck-kibana
+  type: NodePort
+  clusterIP: 10.105.105.8
+  ports:
+    - port: 5601
+      nodePort: 25601
+      targetPort: 5601
