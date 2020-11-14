@@ -2,7 +2,7 @@
 
 Kubernetes installation wrapped in shell script.
 
-This project is aimed to speed up deployment of kubernetes.
+This project is aimed at speeding up deployment of kubernetes.
 
 #### Quick Start
 Kubernetes installation wrapped in a shell script:
