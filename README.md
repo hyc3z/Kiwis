@@ -1,6 +1,6 @@
 ## Kiwis
 
-Kubernetes installation wrapped in shell script.
+**K**ubernetes **i**nstallation **w**rapped **i**n **s**hell-scripts.
 
 This project is aimed at speeding up deployment of kubernetes.
 
