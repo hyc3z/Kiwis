@@ -220,11 +220,3 @@ func CreatePod() {
 	}
 	fmt.Println("Pod Created successfully!")
 }
-
-func ptrint64(p int64) *int64 {
-	return &p
-}
-
-func ptrbool(p bool) *bool {
-	return &p
-}
