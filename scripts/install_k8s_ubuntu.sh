@@ -278,15 +278,16 @@ install_helm() {
 install_follower() {
   clean_install
   kubeadm config print join-defaults > /tmp/kubeadm_join.yaml
-  cat <<EOF >> /tmp/kubeadm_join.yaml
----
-apiVersion: kubeproxy.config.k8s.io/v1alpha1
-kind: KubeProxyConfiguration
-mode: "ipvs"
-EOF
+  #cat <<EOF >> /tmp/kubeadm_join.yaml
+#---
+#apiVersion: kubeproxy.config.k8s.io/v1alpha1
+#kind: KubeProxyConfiguration
+#mode: "ipvs"
+#EOF
   echo "Input the join command displayed on master node:"
   read -r join_command
-  join_command="${join_command} --config /tmp/kubeadm_join.yaml"
+  join_command="${join_command} "
+#--config /tmp/kubeadm_join.yaml"
   $join_command
   export_command="export KUBECONFIG=/etc/kubernetes/kubelet.conf"
   tmp=$( cat /etc/profile | grep KUBECONFIG)

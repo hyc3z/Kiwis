@@ -90,11 +90,12 @@ EOF
   setenforce 0
   yum install -y kubelet kubeadm kubectl
 #  Use systemd driver instead of cgroupfs driver.
-  yum install -y yum-utils device-mapper-persistent-data lvm2
-  yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+  yum install -y yum-utils device-mapper-persistent-data lvm2 ipvsadm
+  yum-config-manager --add-repo -y https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
   yum makecache fast
   yum -y install docker-ce
   systemctl enable kubelet
+# systemd driver support in k8s is currently really poor.Consider using cgroupfs for stablility.
   cat <<EOF > /etc/docker/daemon.json
 {
   "registry-mirror": [
@@ -107,7 +108,7 @@ EOF
             "runtimeArgs": []
         }
   },
-  "exec-opts": ["native.cgroupdriver=systemd"],
+  "exec-opts": ["native.cgroupdriver=cgroupfs"],
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "100m"
@@ -275,7 +276,7 @@ install_helm() {
       do
         sed -i "s/${record}/${github_host_ip}/g" /etc/hosts
       done
-    else
+    else  sudo chown $(id -u):$(id -g) $HOME/.kube/config
       echo "${github_host_ip} raw.githubusercontent.com" >> /etc/hosts
     fi
     curl -fsSL -o /tmp/get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -292,15 +293,16 @@ install_helm() {
 install_follower() {
   clean_install
   kubeadm config print join-defaults > /tmp/kubeadm_join.yaml
-  cat <<EOF >> /tmp/kubeadm_join.yaml
----
-apiVersion: kubeproxy.config.k8s.io/v1alpha1
-kind: KubeProxyConfiguration
-mode: "ipvs"
-EOF
+  #cat <<EOF >> /tmp/kubeadm_join.yaml
+#---
+#apiVersion: kubeproxy.config.k8s.io/v1alpha1
+#kind: KubeProxyConfiguration
+#mode: "ipvs"
+#EOF
   echo "Input the join command displayed on master node:"
   read -r join_command
-  join_command="${join_command} --config /tmp/kubeadm_join.yaml"
+  join_command="${join_command} "
+#--config /tmp/kubeadm_join.yaml"
   $join_command
   export_command="export KUBECONFIG=/etc/kubernetes/kubelet.conf"
   tmp=$( cat /etc/profile | grep KUBECONFIG)

@@ -7,8 +7,14 @@ This project is aimed at speeding up deployment of kubernetes.
 #### Quick Start
 Kubernetes installation wrapped in a shell script:
 
+on Ubuntu 20.04
 ```
 $ sudo scripts/install_k8s_ubuntu.sh
+```
+
+on CentOS 7.9
+```
+$ su -c scripts/install_k8s_ubuntu.sh
 ```
 Currently supported features in the scripts:
 
