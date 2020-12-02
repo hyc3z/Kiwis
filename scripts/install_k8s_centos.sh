@@ -93,7 +93,7 @@ EOF
   yum install -y yum-utils device-mapper-persistent-data lvm2 ipvsadm
   yum-config-manager --add-repo -y https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
   yum makecache fast
-  yum -y install docker-ce
+  yum -y install docker
   systemctl enable kubelet
 # systemd driver support in k8s is currently really poor.Consider using cgroupfs for stablility.
   cat <<EOF > /etc/docker/daemon.json
@@ -101,21 +101,25 @@ EOF
   "registry-mirror": [
     "https://registry.docker-cn.com"
   ],
-  "default-runtime": "nvidia",
-  "runtimes": {
-        "nvidia": {
-            "path": "nvidia-container-runtime",
-            "runtimeArgs": []
-        }
-  },
-  "exec-opts": ["native.cgroupdriver=cgroupfs"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
 }
 EOF
+#if not installing nvidia-docker:
+#"default-runtime": "nvidia",
+#  "runtimes": {
+#        "nvidia": {
+#            "path": "nvidia-container-runtime",
+#            "runtimeArgs": []
+#        }
+#  },
+#  "exec-opts": ["native.cgroupdriver=systemd"],
+#  "log-driver": "json-file",
+#  "log-opts": {
+#    "max-size": "100m"
+#  },
+#  "storage-driver": "overlay2"
+  distribution=$(. /etc/os-release; echo $ID$VERSION_ID)
+  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | sudo tee /etc/yum.repos.d/nvidia-docker.repo
+  sudo yum install -y nvidia-container-toolkit
   systemctl daemon-reload && systemctl restart docker && systemctl enable docker
   return 0
 }
