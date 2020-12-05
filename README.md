@@ -1,6 +1,6 @@
 ## Kiwis
 
-**K**ubernetes **i**nstallation **w**rapped **i**n **s**hell-scripts.
+**K**luster **i**nstallation **w**rapped **i**n **s**hell-scripts.
 
 This project is aimed at speeding up deployment of kubernetes.
 
@@ -16,6 +16,13 @@ on CentOS 7.9
 ```
 $ su -c scripts/install_k8s_ubuntu.sh
 ```
+
+Slurm installation:
+
+on CentOS 7.9
+```
+$ su -c scripts/install_slurm_centos.sh
+```
 Currently supported features in the scripts:
 
 - Installing docker, kubelet service.
@@ -27,5 +34,5 @@ Currently supported features in the scripts:
 #### Additional service add-on
 
 Customed services can also be added to your cluster with `.yaml`
-files. We placed some of the most commonly used yamls in [services](./services)
+files. We placed some of the most commonly used yamls in [services](Kubernetes/services)
 folder. 

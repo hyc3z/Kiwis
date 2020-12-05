@@ -1,7 +1,7 @@
 #!/bin/bash
 
-version="v1.0.6"
-revise_date="Nov.3, 2020"
+version="v1.0.7"
+revise_date="Dec.5, 2020"
 author="Hyc3z"
 dir=$(pwd)
 workflow() {
@@ -67,6 +67,8 @@ remove_swap() {
       newline="#${tmp}"
       pre_sed=$(echo $line | sed 's/\//\\\//g')
       post_sed=$(echo $newline | sed 's/\//\\\//g')
+      pre_sed=$(echo $pre_sed | awk \{'print $1'\})
+      post_sed=$(echo $post_sed | awk \{'print $1'\})
       sed -i "s/${pre_sed}/${post_sed}/g" /etc/fstab
 #      echo $newline
     fi
@@ -215,10 +217,10 @@ EOF
   if [[ $tmp ]]; then
     # shellcheck disable=SC2076
     if [[ ! $tmp =~ ^export\ KUBECONFIG.*  ]]; then
-      pre_sed=$(echo $line | sed 's/\//\\\//g')
+      pre_sed=$(echo $tmp | sed 's/\//\\\//g')
       post_sed=$(echo $export_command | sed 's/\//\\\//g')
       sed -i "s/${pre_sed}/${post_sed}/g" /etc/profile
-      echo $line
+      echo $tmp
     fi
   else
     echo $export_command >> /etc/profile
@@ -313,10 +315,10 @@ install_follower() {
   if [[ $tmp ]]; then
     # shellcheck disable=SC2076
     if [[ ! $tmp =~ ^export\ KUBECONFIG.*  ]]; then
-      pre_sed=$(echo $line | sed 's/\//\\\//g')
+      pre_sed=$(echo $tmp | sed 's/\//\\\//g')
       post_sed=$(echo $export_command | sed 's/\//\\\//g')
       sed -i "s/${pre_sed}/${post_sed}/g" /etc/profile
-      echo $line
+      echo $tmp
     fi
   else
     echo $export_command >> /etc/profile
