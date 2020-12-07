@@ -1,7 +1,7 @@
 #!/bin/bash
 
-version="v1.0.0"
-revise_date="Dec.5, 2020"
+version="v0.0.1"
+revise_date="Dec.7, 2020"
 author="Hyc3z"
 dir=$(pwd)
 workflow() {
@@ -10,6 +10,10 @@ workflow() {
   turnoff_selinux
   pass_ssh_keys
   pass_host_records
+  create_slurm_user
+  install_ohpc_repo
+  install_dependency
+  install_slurm
   return 0
 }
 
@@ -25,6 +29,10 @@ display_menu() {
     echo "3. Turn off selinux (3) "
     echo "4. Pass keys (4)"
     echo "5. Pass host records (5)"
+    echo "6. Create Slurm User (6)"
+    echo "7. Install Ohpc Repo (7)"
+    echo "8. Install Dependency (8)"
+    echo "9. Install Slurm (9)"
     read choice
     return "$choice"
 }
@@ -112,6 +120,46 @@ pass_host_records() {
   done < ./host_config.txt
 }
 
+create_slurm_user() {
+  export SLURMUSER=412
+  groupadd -g $SLURMUSER slurm
+  useradd -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm -s /bin/bash
+  has_slurmuser=$(cat /etc/profile | grep SLURMUSER)
+  if [ -z $has_slurmuser ]; then
+    echo "export SLURMUSER=412" >> /etc/profile
+  fi
+}
+
+install_ohpc_repo() {
+#  Need to be updated
+  yum install -y http://build.openhpc.community/OpenHPC:/1.3/CentOS_7/x86_64/ohpc-release-1.3-1.el7.x86_64.rpm
+}
+
+install_dependency() {
+  yum install openssl openssl-devel pam-devel numactl numactl-devel hwloc hwloc-devel lua lua-devel readline-devel rrdtool-devel ncurses-devel man2html libibmad libibumad -y
+}
+
+# Slurm clients also need to install server,
+# as it contains script for stopping jobs.
+install_slurm() {
+  while read line
+  do
+    host_ip=$( echo $line | awk \{'print $1'\} )
+    host_name=$( echo $line | awk \{'print $2'\} )
+    pass_phrase=$( echo $line | awk \{'print $3'\} )
+  #  remote execute
+    ssh $host_ip "yum -y install ohpc-slurm-server ohpc-slurm-client" < /dev/null
+    ssh $host_ip "mkdir -p /etc/slurm" < /dev/null
+    scp ./slurm.conf $host_ip:/etc/slurm/slurm.conf
+    ssh $host_ip "systemctl start munge && systemctl start slurmctld && systemctl start slurmd && systemctl enable munge && systemctl enable slurmctld && systemctl enable slurmd" < /dev/null
+    if [ $? -eq 0 ];then
+      echo $host_name done.
+    else
+      echo $host_name failed.
+    fi
+  done < ./host_config.txt
+}
+
 loop=1
 until [ $loop -eq 0 ]; do
   display_menu
@@ -122,6 +170,10 @@ until [ $loop -eq 0 ]; do
     3) turnoff_selinux ;;
     4) pass_ssh_keys ;;
     5) pass_host_records ;;
+    6) create_slurm_user ;;
+    7) install_ohpc_repo ;;
+    8) install_dependency ;;
+    9) install_slurm ;;
     *)   (( loop=0 )) ;;
   esac
 done
