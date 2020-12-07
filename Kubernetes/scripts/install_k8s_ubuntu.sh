@@ -34,11 +34,6 @@ display_menu() {
     echo "b. Setup nvidia environment (b)"
     echo "c. Change port range (c)"
     echo "d. Setup nginx environment (d)"
-
-#    echo "Detected md arrays, auto mount? (Y or N)"
-#    read auto_mount
-#    echo "Detected md arrays, auto add to /etc/fstab? (Y or N)"
-#    read auto_fstab
     read choice
     return "$choice"
 }

@@ -1,12 +1,13 @@
 #!/bin/bash
 
-version="v1.0.7"
-revise_date="Dec.5, 2020"
+version="v1.0.8"
+revise_date="Dec.7, 2020"
 author="Hyc3z"
 dir=$(pwd)
 workflow() {
   disclaimer
   install_docker_and_kubelet
+  install_nvidia_driver
   remove_swap
   turnoff_selinux
   enable_ipforwarding
@@ -34,10 +35,8 @@ display_menu() {
     echo "b. Setup nvidia environment (b)"
     echo "c. Change port range (c)"
     echo "d. Setup nginx environment (d)"
-#    echo "Detected md arrays, auto mount? (Y or N)"
-#    read auto_mount
-#    echo "Detected md arrays, auto add to /etc/fstab? (Y or N)"
-#    read auto_fstab
+    echo "e. Install nvidia driver (e)"
+
     read choice
     return "$choice"
 }
@@ -124,6 +123,26 @@ EOF
   sudo yum install -y nvidia-container-toolkit
   systemctl daemon-reload && systemctl restart docker && systemctl enable docker
   return 0
+}
+
+install_nvidia_driver() {
+  has_gpu=$(lspci | grep -i nvidia)
+  if [[ $has_gpu ]]; then
+    yum install kernel-devel gcc -y
+    # blacklist nouveau
+    has_nouveau=$(lsmod | grep nouveau)
+    if [[ $has_nouveau ]]; then
+      sed -i "s/^blacklist nvidiafb/#blacklist nvidiafb/g" /lib/modprobe.d/dist-blacklist.conf
+    fi
+    blocked_nouveau=$(cat /lib/modprobe.d/dist-blacklist.conf | grep nouveau)
+    if [ -z $blocked_nouveau ]; then
+      echo "blacklist nouveau" >> /lib/modprobe.d/dist-blacklist.conf
+      echo "options nouveau modeset=0" >> /lib/modprobe.d/dist-blacklist.conf
+    fi
+    rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+    yum install -y https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+    yum install -y nvidia-x11-drv
+  fi
 }
 
 turnoff_selinux() {
@@ -438,6 +457,7 @@ until [ $loop -eq 0 ]; do
     b) setup_nvidia_environment ;;
     c) change_service_port_range ;;
     d) setup_nginx_ingress ;;
+    e) install_nvidia_driver ;;
     *)   (( loop=0 )) ;;
   esac
 done

@@ -7,6 +7,9 @@ dir=$(pwd)
 workflow() {
   disclaimer
   install_mpi
+  turnoff_selinux
+  pass_ssh_keys
+  pass_host_records
   return 0
 }
 
@@ -19,11 +22,9 @@ display_menu() {
     echo "0. Auto install slurm (0)"
     echo "1. Disclaimer (1)"
     echo "2. Install mpi (2)"
-
-#    echo "Detected md arrays, auto mount? (Y or N)"
-#    read auto_mount
-#    echo "Detected md arrays, auto add to /etc/fstab? (Y or N)"
-#    read auto_fstab
+    echo "3. Turn off selinux (3) "
+    echo "4. Pass keys (4)"
+    echo "5. Pass host records (5)"
     read choice
     return "$choice"
 }
@@ -47,20 +48,82 @@ install_mpi() {
   yum install mpich-3.2-autoload.x86_64
   yum install mpich-3.2-devel.x86_64
   yum install mpich-3.2-doc.noarch
-  echo "export PATH=/usr/lib64/mpich-3.2/bin:\$PATH" >> ~/.bashrc
-  tmp=$( cat /etc/profile | grep KUBECONFIG)
+  export_command="export PATH=/usr/lib64/mpich-3.2/bin:\$PATH" >> ~/.bashrc
+  tmp=$( cat /etc/profile | grep mpich)
   if [[ $tmp ]]; then
     # shellcheck disable=SC2076
     if [[ ! $tmp =~ ^export\ KUBECONFIG.*  ]]; then
-      pre_sed=$(echo $line | sed 's/\//\\\//g')
+      pre_sed=$(echo $tmp | sed 's/\//\\\//g')
       post_sed=$(echo $export_command | sed 's/\//\\\//g')
       sed -i "s/${pre_sed}/${post_sed}/g" /etc/profile
-      echo $line
     fi
   else
     echo $export_command >> /etc/profile
   fi
 }
 
+turnoff_selinux() {
+  setenforce 0
+  sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+  systemctl stop firewalld
+  systemctl disable firewalld
+  return 0
+}
 
+pass_ssh_keys() {
+  yum install -y sshpass
+  ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
+  while read line
+  do
+    host_ip=$( echo $line | awk \{'print $1'\} )
+    host_name=$( echo $line | awk \{'print $2'\} )
+    pass_phrase=$( echo $line | awk \{'print $3'\} )
+  #  pass ssh keys
+    sshpass -p $pass_phrase ssh-copy-id -i ~/.ssh/id_rsa.pub  root@$host_ip -o StrictHostKeyChecking=no  &>/dev/null
+    if [ $? -eq 0 ];then
+      echo $host_name done.
+    else
+      echo $host_name failed.
+    fi
 
+  done < ./host_config.txt
+}
+
+pass_host_records() {
+  while read line
+  do
+    host_ip=$( echo $line | awk \{'print $1'\} )
+    host_name=$( echo $line | awk \{'print $2'\} )
+    pass_phrase=$( echo $line | awk \{'print $3'\} )
+  #  remote execute
+    ssh $host_ip "mv /etc/hosts /etc/hosts.bak" < /dev/null
+    while read line2
+    do
+      host_ip_config=$( echo $line2 | awk \{'print $1'\} )
+      host_name_config=$( echo $line2 | awk \{'print $2'\} )
+      echo $host_ip_config $host_name_config
+      ssh $host_ip "echo $host_ip_config $host_name_config >> /etc/hosts" < /dev/null
+    done < ./host_config.txt
+    if [ $? -eq 0 ];then
+      echo $host_name done.
+    else
+      echo $host_name failed.
+    fi
+  done < ./host_config.txt
+}
+
+loop=1
+until [ $loop -eq 0 ]; do
+  display_menu
+  case $choice in
+    0) workflow;;
+    1) disclaimer ;;
+    2) install_mpi ;;
+    3) turnoff_selinux ;;
+    4) pass_ssh_keys ;;
+    5) pass_host_records ;;
+    *)   (( loop=0 )) ;;
+  esac
+done
+echo "Finished."
+exit 0
