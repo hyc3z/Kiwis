@@ -1,7 +1,7 @@
 #!/bin/bash
 
-version="v0.0.1"
-revise_date="Jan.25, 2021"
+version="v0.0.2"
+revise_date="Jan.26, 2021"
 author="Hyc3z"
 dir=$(pwd)
 leadership=1
@@ -52,16 +52,16 @@ selection() {
   echo "Compile and distribute rpm packages to receivers? (Y/N)"
   read x
   case $x in
-  y|Y)leadership=1;;
-  *)leadership=0;;
+  y|Y) leadership=1;;
+  *) leadership=0;;
   esac
 }
 
 create_global_user_account() {
-  export MUNGEUSER=1001
+  MUNGEUSER=1001
   groupadd -g $MUNGEUSER munge
   useradd  -m -c "MUNGE Uid 'N' Gid Emporium" -d /var/lib/munge -u $MUNGEUSER -g munge  -s /sbin/nologin munge
-  export SlurmUSER=1002
+  SlurmUSER=1002
   groupadd -g $SlurmUSER slurm
   useradd  -m -c "Slurm workload manager" -d /var/lib/slurm -u $SlurmUSER -g slurm  -s /bin/bash slurm
 }
@@ -69,6 +69,8 @@ create_global_user_account() {
 munge_authentication_service() {
   yum install -y epel-release
   yum install -y munge munge-libs munge-devel ssh-pass
+  # remove existing key before creating
+  rm -f /etc/munge/munge.key
   /usr/sbin/create-munge-key -r
 
   chown -R munge: /etc/munge/ /var/log/munge/
@@ -84,6 +86,7 @@ pass_munge_keys() {
     host_name=$( echo $line |  \{'print $2'\} )
     pass_phrase=$( echo $line | awk \{'print $3'\} )
   #  pass munge keys
+    ssh $host_ip "mkdir -p /etc/munge/" < /dev/null
     sshpass -p $pass_phrase scp /etc/munge/munge.key root@$host_ip:/etc/munge &>/dev/null
     if [ $? -eq 0 ];then
       echo $host_name done.
@@ -94,6 +97,7 @@ pass_munge_keys() {
 }
 pass_ssh_keys() {
   yum install -y sshpass
+  rm -f /root/.ssh/id_rsa
   ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
   while read line
   do
@@ -141,7 +145,7 @@ pass_rpms() {
     host_name=$( echo $line | awk \{'print $2'\} )
     pass_phrase=$( echo $line | awk \{'print $3'\} )
   #  remote execute
-    ssh $host_ip "mkdir /root/rpmbuild/RPMS/x86_64" < /dev/null
+    ssh $host_ip "mkdir -p /root/rpmbuild/RPMS/x86_64" < /dev/null
     sshpass -p $pass_phrase scp -r /root/rpmbuild/RPMS/x86_64 root@$host_ip:/root/rpmbuild/RPMS/x86_64 &>/dev/null
     if [ $? -eq 0 ];then
       echo $host_name done.
