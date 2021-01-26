@@ -41,6 +41,8 @@ disclaimer() {
 clean_install() {
   installed=$(yum list installed | grep ohpc | awk {'print $1'})
   yum remove -y ${installed}
+  installed=$(yum list installed | grep slurm | awk {'print $1'})
+  yum remove -y ${installed}
   rm -f slurm-${SLURM_BUILD_VER}.tar*
 }
 
