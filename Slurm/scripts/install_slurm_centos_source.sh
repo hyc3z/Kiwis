@@ -22,6 +22,7 @@ workflow() {
     pass_munge_keys
   fi
   install_rpms
+  configures
   return 0
 }
 disclaimer() {
@@ -168,20 +169,47 @@ build_rpms() {
     yum install -y mariadb-server mariadb-devel
   # Enable Ansible
     yum install -y mysql-python
-  # Set build version
-
+  # build jwt
+    # yum install -y jansson jansson-devel
+    # git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git libjwt
+    # cd libjwt
+    # autoreconf --force --install
+    # ./configure --prefix=/usr/local
+    # make -j
+    # sudo make install
+    # cd ..
+  # install jwt
+    yum install -y http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/libjwt-1.12.0-0.sdl7.x86_64.rpm
+    yum install -y http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/libjwt-devel-1.12.0-0.sdl7.x86_64.rpm
+    # build rpm
+    # Note that hdf5 depency is not solved, build may fail.
     wget https://download.schedmd.com/slurm/slurm-${SLURM_BUILD_VER}.tar.bz2
-    rpmbuild -ta slurm-${SLURM_BUILD_VER}.tar.bz2 --with mysql --with slurmrestd
+    rpmbuild -ta slurm-${SLURM_BUILD_VER}.tar.bz2 --with mysql --with slurmrestd --with jwt
     rm -f slurm-${SLURM_BUILD_VER}.tar.*
 }
 
 install_rpms() {
   yum install -y /root/rpmbuild/RPMS/x86_64/slurm*.rpm
-  if [[ $leadership ]]; then
-    systemctl enable slurmctld
-    systemctl enable slurmrestd
-  else
-    systemctl enable slurmd
-  fi
+  # if [[ $leadership ]]; then
+  #   systemctl enable slurmctld
+  #   systemctl enable slurmrestd
+  # else
+  #   systemctl enable slurmd
+  # fi
+}
+
+configures() {
+  echo "You'll have to manually configure mariadb, reference: https://wiki.fysik.dtu.dk/niflheim/Slurm_database."
+  echo "Finished configuration? (Y/N)"
+  read x
+  case $x in
+  y|Y)return 0;;
+  *)exit 1;;
+  esac
+  chmod 0600 /etc/slurm/slurmdbd.conf
+  chown slurm /etc/slurm/slurmdbd.conf
+  systemctl enable slurmdbd
+  systemctl start slurmdbd
+  
 }
 workflow
