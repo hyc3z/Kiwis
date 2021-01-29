@@ -1,0 +1,17 @@
+#!/bin/bash
+source /etc/profile
+preLC=$LC_ALL
+export LC_ALL=en_US.UTF8
+snapshot_name=$(date "+%Y-%b%d-%H%M%S")
+pools=$(zpool list | grep ONLINE | awk '{print $1}')
+if [[ $pools ]]; then
+  for pool in $pools
+  do
+    zfs snapshot -r "${pool}"@"${snapshot_name}"
+    if [ $? -ne 0 ]; then
+        echo -e "\e[38;5;1mERROR: \e[0m: ... Failed to snapshot ${pool}."
+    fi
+  done
+  echo -e "Finished snapshot of ${pool}."
+fi
+export LC_ALL=$preLC

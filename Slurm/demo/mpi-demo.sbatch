@@ -7,7 +7,7 @@
 #SBATCH --output=hello-mpi.out
 
 # this job requests 2 nodes
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 
 # this job requests exclusive access to the nodes it is given
 # this mean it will be the only job running on the node

@@ -1,0 +1,13 @@
+#!/bin/bash
+source /etc/profile
+pools=$(zpool list | grep ONLINE | awk '{print $1}')
+if [[ $pools ]]; then
+  for pool in $pools
+  do
+    zpool scrub "${pool}"
+    if [ $? -ne 0 ]; then
+        echo -e "\e[38;5;1mERROR: \e[0m: ... Failed to scrub ${pool}."
+    fi
+  done
+  echo -e "Finished scrubbing ${pool}."
+fi
