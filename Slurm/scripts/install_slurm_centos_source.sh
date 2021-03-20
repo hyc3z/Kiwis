@@ -1,7 +1,7 @@
 #!/bin/bash
 
-version="v0.0.2"
-revise_date="Jan.26, 2021"
+version="v0.0.3"
+revise_date="Mar.20, 2021"
 author="Hyc3z"
 dir=$(pwd)
 leadership=1
@@ -22,6 +22,7 @@ workflow() {
     pass_munge_keys
   fi
   install_rpms
+  jwt_keygen
   configures
   return 0
 }
@@ -71,7 +72,8 @@ create_global_user_account() {
 
 munge_authentication_service() {
   yum install -y epel-release
-  yum install -y munge munge-libs munge-devel ssh-pass
+  yum install -y munge munge-libs 
+  yum install -y munge-devel sshpass
   # remove existing key before creating
   rm -f /etc/munge/munge.key
   /usr/sbin/create-munge-key -r
@@ -80,6 +82,11 @@ munge_authentication_service() {
   chmod 0700 /etc/munge/ /var/log/munge/
   systemctl enable munge
   systemctl start munge
+  if [ $? -ne 0 ]; then
+    return 0;
+  else 
+    exit 1;
+  fi
 }
 
 pass_munge_keys() {
@@ -160,7 +167,9 @@ pass_rpms() {
 
 build_rpms() {
   #  prerequisites
-    yum install -y python3 rpm-build gcc openssl openssl-devel libssh2-devel pam-devel numactl numactl-devel hwloc hwloc-devel lua lua-devel readline-devel rrdtool-devel ncurses-devel gtk2-devel libssh2-devel libibmad libibumad perl-Switch perl-ExtUtils-MakeMaker
+    echo "WARNING: if you're using CentOS Stream, make sure PowerTools repo is enabled."
+    yum install -y perl-Switch 
+    yum install -y python3 rpm-build gcc openssl openssl-devel libssh2-devel pam-devel numactl numactl-devel hwloc hwloc-devel lua lua-devel readline-devel rrdtool-devel ncurses-devel gtk2-devel libssh2-devel libibmad libibumad perl-ExtUtils-MakeMaker
   #  EPEL
     yum install -y man2html
   # build slurmrestd
@@ -185,7 +194,6 @@ build_rpms() {
     # Note that hdf5 depency is not solved, build may fail.
     wget https://download.schedmd.com/slurm/slurm-${SLURM_BUILD_VER}.tar.bz2
     rpmbuild -ta slurm-${SLURM_BUILD_VER}.tar.bz2 --with mysql --with slurmrestd --with jwt
-    rm -f slurm-${SLURM_BUILD_VER}.tar.*
 }
 
 install_rpms() {
@@ -198,18 +206,31 @@ install_rpms() {
   # fi
 }
 
+jwt_keygen() {
+  openssl genrsa -out /var/spool/slurm/ctld/jwt_hs256.key 2048
+  chown slurm /var/spool/slurm/ctld/jwt_hs256.key
+  chmod 0600 /var/spool/slurm/ctld/jwt_hs256.key
+}
 configures() {
   echo "You'll have to manually configure mariadb, reference: https://wiki.fysik.dtu.dk/niflheim/Slurm_database."
-  echo "Finished configuration? (Y/N)"
+  echo "Finish mariadb configuration, then comeback. (Y/N)"
   read x
   case $x in
   y|Y)return 0;;
   *)exit 1;;
   esac
+  mkdir -p /var/spool/slurm/ctld
+  mkdir -p /var/spool/slurm/d
+  chown -R slurm /var/spool/slurm
   chmod 0600 /etc/slurm/slurmdbd.conf
   chown slurm /etc/slurm/slurmdbd.conf
   systemctl enable slurmdbd
   systemctl start slurmdbd
-  
+  systemctl enable slurmd
+  systemctl start slurmd
+  systemctl enable slurmctld
+  systemctl start slurmctld
+  systemctl enable slurmrestd
+  systemctl start slurmrestd
 }
 workflow
