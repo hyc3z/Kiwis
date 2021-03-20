@@ -1,8 +1,8 @@
 ## Kiwis
 
-**K**luster **i**nstallation **w**rapped **i**n **s**hell-scripts.
+Kluster installation wrapped in shell-scripts.
 
-This project is aimed at speeding up deployment of kubernetes.
+This project is aimed at speeding up deployment of cluster environment.
 
 #### Quick Start
 Kubernetes installation wrapped in a shell script:
