@@ -21,4 +21,4 @@
 
 # Run the process with mpirun. Notice -n is not required. mpirun will
 # automatically figure out how many processes to run from the slurm options
-/usr/lib64/mpich-3.2/bin/mpirun /root/slurm/mpi-demo
+/usr/lib64/openmpi/bin/mpirun /mnt/slurm/hyc/program/mpi-demo
