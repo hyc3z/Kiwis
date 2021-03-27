@@ -221,7 +221,10 @@ configures() {
   esac
   mkdir -p /var/spool/slurm/ctld
   mkdir -p /var/spool/slurm/d
+  mkdir -p /var/log/slurm/
+  touch /var/log/slurm/slurmdbd.log
   chown -R slurm /var/spool/slurm
+  chown -R slurm /var/log/slurm
   chmod 0600 /etc/slurm/slurmdbd.conf
   chown slurm /etc/slurm/slurmdbd.conf
   systemctl enable slurmdbd
