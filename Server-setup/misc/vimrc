@@ -1,0 +1,14 @@
+set nu					"显示行号
+set tabstop=4			"tab制表符长度4
+set shiftwidth=4		"自动缩进长度4
+set softtabstop=4		"混合制表符设置
+set autochdir
+set mouse=a             "允许使用鼠标
+set autoindent			"自动缩进
+set smartindent			"智能缩进
+set cindent				"c语言格式缩进
+syntax on				"开启语法高亮
+set cursorline          "突出当前行
+
+au BufWinLeave * silent mkview  "保存折叠模式信息
+au BufWinEnter * silent loadview "加载折叠信息
