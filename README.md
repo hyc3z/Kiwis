@@ -12,9 +12,15 @@ on Ubuntu 20.04
 $ sudo scripts/install_k8s_ubuntu.sh
 ```
 
-on CentOS 7.9
+on CentOS 7.6
 ```
-$ su -c scripts/install_k8s_ubuntu.sh
+$ su -c scripts/install_k8s_centos_7.6.sh
+```
+
+on CentOS 8.x
+
+```
+$ su -c scripts/install_k8s_centos_8.5.sh
 ```
 
 Slurm installation:
